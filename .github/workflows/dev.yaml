@@ -1,0 +1,54 @@
+name: dev-workflow
+on:
+  push:
+    branches:
+      - develop
+jobs:
+  dev-workflow:
+    runs-on: ubuntu-20.04
+    env:
+      SNOWPLOW_ORGID: ${{ secrets.SNOWPLOW_ORGID }}
+      SNOWPLOW_APIKEY: ${{ secrets.SNOWPLOW_APIKEY }}
+      SNOWPLOW_TARGET: DEV
+    steps:
+    - uses: actions/checkout@v2.4.0
+
+    - name: lint
+      uses: docker://snowplow/igluctl:0.6.0
+      with:
+        args: lint src/main
+
+    - name: bootstrap snowplow-micro
+      shell: bash
+      run: |
+        TMPDIR=.test-$GITHUB_RUN_ID
+        mkdir -p $TMPDIR/iglu-client-embedded/schemas
+        cp -R $GITHUB_WORKSPACE/src/main/* $TMPDIR/iglu-client-embedded/schemas/
+        cp -R $GITHUB_WORKSPACE/micro/config/* $TMPDIR/
+        wget -q https://github.com/snowplow-incubator/snowplow-micro/releases/download/micro-1.2.1/snowplow-micro-1.2.1.jar
+        java -cp snowplow-micro-1.2.1.jar:$TMPDIR com.snowplowanalytics.snowplow.micro.Main --collector-config $TMPDIR/micro.conf --iglu $TMPDIR/iglu.json &
+
+    - name: wait-for-snowplow-micro
+      shell: bash
+      run: |
+        wget -q https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh
+        chmod +x wait-for-it.sh
+        ./wait-for-it.sh localhost:9090 -s -t 10 -- echo "micro is available"
+
+    - name: run tests
+      shell: bash
+      run: |
+        npm i
+        npm run test
+
+    - name: validate schemas
+      shell: bash
+      run: |
+        npm i
+        npm run validate
+
+    - name: publish schemas
+      shell: bash
+      run: |
+        npm i
+        npm run publish

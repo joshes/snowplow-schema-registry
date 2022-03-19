@@ -1,0 +1,19 @@
+name: prod-workflow
+on:
+  push:
+    branches:
+      - main
+jobs:
+  prod-workflow:
+    runs-on: ubuntu-20.04
+    env:
+      SNOWPLOW_ORGID: ${{ secrets.SNOWPLOW_ORGID }}
+      SNOWPLOW_APIKEY: ${{ secrets.SNOWPLOW_APIKEY }}
+      SNOWPLOW_TARGET: PROD
+    steps:
+    - uses: actions/checkout@v2.4.0
+    - name: publish schemas
+      shell: bash
+      run: |
+        npm i
+        npm run publish

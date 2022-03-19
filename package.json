@@ -1,0 +1,28 @@
+{
+  "name": "snowplow-schema-registry",
+  "version": "1.0.0",
+  "description": "Utils to assist with schema validation and deployment.",
+  "scripts": {
+    "test": "node lib/test --schemas src/main --tests src/test --collector http://localhost:9090",
+    "validate": "node lib/validate --schemas src/main --apiKey $SNOWPLOW_APIKEY --orgId $SNOWPLOW_ORGID",
+    "publish": "node lib/publish --schemas src/main --apiKey $SNOWPLOW_APIKEY --orgId $SNOWPLOW_ORGID --target $SNOWPLOW_TARGET"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/joshes/snowplow-schema-registry.git"
+  },
+  "author": "Joshua Hansen",
+  "private": true,
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/joshes/snowplow-schema-registry/issues"
+  },
+  "homepage": "https://github.com/joshes/snowplow-schema-registry#readme",
+  "dependencies": {
+    "@snowplow/node-tracker": "^3.3.1",
+    "commander": "^9.0.0",
+    "cross-fetch": "^3.1.5",
+    "glob": "^7.2.0",
+    "tough-cookie": "^4.0.0"
+  }
+}

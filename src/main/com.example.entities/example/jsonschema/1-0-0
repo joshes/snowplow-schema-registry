@@ -1,0 +1,22 @@
+{
+	"$schema": "http://iglucentral.com/schemas/com.snowplowanalytics.self-desc/schema/jsonschema/1-0-0#",
+	"description": "Schema for an example event",
+	"self": {
+		"vendor": "com.example.entities",
+		"name": "example",
+		"format": "jsonschema",
+		"version": "1-0-0"
+	},
+	"properties": {
+		"name": {
+			"type": "string",
+			"description": "",
+			"maxLength": 64
+		}
+	},
+	"additionalProperties": false,
+	"type": "object",
+	"required": [
+		"name"
+	]
+}
